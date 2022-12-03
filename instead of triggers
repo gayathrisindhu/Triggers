@@ -1,1 +1,31 @@
+SYNTAX::
+-------
+CREATE TRIGGER [schema_name.] trigger_name
+ON {table_name | view_name }
+INSTEAD OF {[INSERT] [,] [UPDATE] [,] [DELETE] }
+AS
+{sql_statements}
 
+EXAMPLE::
+---------
+CREATE TRIGGER production.trg_vw_brands 
+ON production.vw_brands
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO production.brand_approvals ( 
+        brand_name
+    )
+    SELECT
+        i.brand_name
+    FROM
+        inserted i
+    WHERE
+        i.brand_name NOT IN (
+            SELECT 
+                brand_name
+            FROM
+                production.brands
+        );
+END
